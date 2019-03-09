@@ -1,24 +1,24 @@
-const express = require('express');
-const path    = require('path');
+var express = require('express')
+var bodyParser = require('body-parser')
+var app = express()
+ 
+const hostname = '192.168.0.196';
+const port = 5000;
 
+app.use(bodyParser.json());
 
-//Configurações do protocolo de comunicação
-const app    = express();
-const server = require('http').createServer(app);
-const io     = require('socket.io')(server);
+app.use( function (req, res) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain')
+    res.write('you posted:\n')
+    res.end(JSON.stringify(req.body, null, 2))
+    console.log(req.body)
+})
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'public'));
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-
-app.use('/', (req, res) =>{
-    res.render('index.html');
-    
+app.post("/", (req, res)=>{
+  console.log("Json => "+req.body)
 });
 
-io.on('connection', socket =>{
-    console.log(`Socket conectado:${socket.id}`);""
+app.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
-
-server.listen(3000);
